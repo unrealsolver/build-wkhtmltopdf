@@ -23,8 +23,8 @@ function usage {
 ## Install deps
 function deps {
   echo '[deps]'
-  sudo apt-get update
-  sudo apt-get install -y libxext-dev libxrender-dev libpng-dev zlib1g-dev libssl-dev libjpeg-dev libfreetype6-dev
+  apt-get update
+  apt-get install -y libxext-dev libxrender-dev libpng-dev zlib1g-dev libssl-dev libjpeg-dev libfreetype6-dev
 }
 
 function src {
@@ -102,22 +102,28 @@ if [ $# -gt 0 ]; then
   exit
 fi
 
+function status_check {
+  STATUS=$?
+  if [ $STATUS -ne 0 ]; then
+    echo $1
+    exit 1
+  fi
+}
+
 ## TODO Sudo required
 
 
 ## TASKS LIST:
 deps
+status_check 'Error while installing dependencies'
+
 src
 build
-
-STATUS=$?
-if [ $STATUS -ne 0 ]; then
-  echo Error!
-  exit
-fi
+status_check 'Error while compiling sources'
 
 pkg_prepare
 pkg_create
+status_check 'Error while creating debian package'
 
 echo "Done!"
 
